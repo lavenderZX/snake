@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>简单贪吃蛇</title>
+	<style type="text/css">
+		body{
+			margin: 0;
+		}
+		#map {
+			width: 1000px;
+			height: 500px;
+			background-color: #CCC;
+		}
+		.snake{
+			position: absolute;
+			width: 20px;
+			height: 20px;
+			background-color: green;
+		}
+		#food{
+			width: 20px;
+			height: 20px;
+		}
+	</style>
+</head>
+<body>
+
+	<div id="map"></div>
+    <input type="button" id="btn" value="开始游戏"></input>
+
+</body>
+<script type="text/javascript">
+
+	window.onload = function(){ //onload 事件会在页面或图像加载完成后立即发生
+
+		var snake = [[1, 1]];
+		var foodX = Math.floor(Math.random()*50);
+		var foodY = Math.floor(Math.random()*25);
+		var dir = "";
+		var flag = true;
+		// var index = false;
+		var obtn = document.getElementById("btn");
+		
+		obtn.onclick = function(){
+				paint();
+	        	timer = setInterval(move, 200);
+		};
+		//蛇移动
+		var move = function(){
+
+			var Head = [snake[snake.length - 1][0], snake[snake.length - 1][1]];
+
+			switch(dir) {
+				case 'up':
+					Head[1]--;
+					break;
+				case 'right':
+					Head[0]++;
+					break;
+				case 'down':
+					Head[1]++;
+					break;
+				case 'left':
+					Head[0]--;
+					break;
+			}
+			//判断是否撞到自己
+			for(var i = 1; i < snake.length; i++){
+		        if(Head[0] == snake[i][0] && Head[1] == snake[i][1]){
+		        	flag = false;    	
+		          	clearInterval(timer);   
+		            alert('哇呜，你是想吃掉自己吗！');
+		            location.reload(); 
+		            }
+		    }  
+		    //判断是否撞壁     
+			if(Head[0] < 0 || Head[0] >= 50 || Head[1] < 0 || Head[1] >= 25){
+				clearInterval(timer);
+			    alert("哇呜，撞墙撞晕了！"); 
+			    location.reload(); 
+			}else if(Head[0] == foodX && Head[1] == foodY) {
+					//判断是否吃到食物，吃到食物的条件是蛇头的坐标和食物的坐标对应相等，蛇头吃到食物的过程就是将列表中没有吃到食物前的头重新画一遍，这样列表的长度就加一，而列表中的对象就多了一个。
+				    foodX = Math.floor(Math.random() * 50);
+				    foodY = Math.floor(Math.random() * 25);
+				    snake.push(Head);				
+					paint();	
+			 	}else if(flag) {
+			 			snake.shift(); //shift() 方法用于把数组的第一个元素从其中删除，并返回第一个元素的值。  把蛇最后一节去掉，变成头部。擦除尾部，向前移动
+			 			snake.push(Head);				
+						paint();	
+			 		}
+				// snake.push(Head);				
+				// paint();	
+		}
+		//画蛇，画食物
+		var paint = function(){
+			// console.log(foodX + "," + foodY);
+			var $Map = document.getElementById("map");
+			$Map.innerHTML = "";
+			for(var i = 0; i < snake.length; i++) {
+				var createSnake = document.createElement("div");
+				createSnake.className = "snake";
+				createSnake.style.left = snake[i][0] * 20 + "px";
+				createSnake.style.top = snake[i][1] * 20 + "px";
+				$Map.appendChild(createSnake);
+			}
+		      	var createFood = document.createElement('div');
+		        createFood.style.height = 20 + "px";
+		        createFood.style.width = 20 + "px";
+		        createFood.style.backgroundColor = "red"; 
+		        createFood.style.position = 'absolute';
+		        createFood.style.top = 20 * foodY + "px";
+		        createFood.style.left = 20 * foodX + "px";
+				$Map.appendChild(createFood);
+		}
+			//键盘监听
+			document.onkeydown = function(event) { //改变蛇方向
+				var code;
+				if(window.event){
+					code = window.event.keyCode;
+				}else{
+					code = event.keyCode;
+				}
+					switch(code){
+						case 37 :
+							if(dir != "right"){
+								dir = "left";
+							}
+								break;//左 keycode=37
+						case 38 :
+							if(dir != "down"){ 
+								dir = "up";
+							}
+								break;//上    keycode=38
+						case 39 : 
+							if(dir != "left"){
+								dir = "right";
+							}
+								break;//右  keycode=39
+						case 40 :
+							if(dir != "up"){
+							 dir = "down";
+							}
+							 break;//下  keycode=40
+					}
+
+				// if(window.event){
+				// 	code = window.event.keyCode - 37;
+				// }else{
+				// 	code = event.keyCode - 37;
+				// }
+				// 	switch(code){
+				// 		case 1 : dir = "up";break;//上    keycode=38
+				// 		case 2 : dir = "right";break;//右  keycode=39
+				// 		case 3 : dir = "down";break;//下  keycode=40
+				// 		case 0 : dir = "left";break;//左 keycode=37
+				// 	}
+			}
+		};
+	
+	
+	// window.onload = function(){  //onload 事件会在页面或图像加载完成后立即发生：
+	// 	paint();
+	// 	time = setInterval(move, speed);
+	// };
+</script>
+</html>
